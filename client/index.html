@@ -58,6 +58,16 @@
         <tfoot>
         </tfoot>
     </table>
-    
+
+    <script src="app/domain/negociacao/Negociacao.js"></script>
+    <script>
+        let hoje = new Date();
+        let n1 = new Negociacao(hoje, 5, 700);
+        console.log(n1.data);
+
+        hoje.setDate(11);
+
+        console.log(n1.data);
+    </script>
 </body>
 </html>
