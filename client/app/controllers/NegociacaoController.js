@@ -21,11 +21,8 @@ class NegociacaoController {
             event.preventDefault();
             this._negociacoes.adiciona(this._criaNegociacao());
             this._mensagem.texto = 'Negociação adicionada com sucesso.';
-            // this._limpaFormulario();
-            this._limpaForm();
+            this._limpaFormulario();
         } catch (err) {
-            console.log(err);
-            console.log(err.stack);
             if (err instanceof DataInvalidaException)
                 this._mensagem.texto = err.message;
             else
