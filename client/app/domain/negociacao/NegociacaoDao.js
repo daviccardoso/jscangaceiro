@@ -1,70 +1,72 @@
-class NegociacaoDao {
-    constructor(connection) {
-        this._connection = connection;
-        this._store = 'negociacoes';
-    }
+import { Negociacao } from 'Negociacao.js';
 
-    adiciona(negociacao) {
-        return new Promise((resolve, reject) => {
-            const request = this._connection
-                .transaction([this._store], 'readwrite')
-                .objectStore(this._store)
-                .add(negociacao);
+export class NegociacaoDao {
+  constructor(connection) {
+    this._connection = connection;
+    this._store = 'negociacoes';
+  }
 
-            request.addEventListener('success', e => resolve());
-            request.addEventListener('error', e => {
-                console.error(e.target.error);
-                reject('Não foi possível salvar a negociação.');
-            });
-        });
-    }
+  adiciona(negociacao) {
+    return new Promise((resolve, reject) => {
+      const request = this._connection
+        .transaction([this._store], 'readwrite')
+        .objectStore(this._store)
+        .add(negociacao);
 
-    listaTodas() {
-        return new Promise((resolve, reject) => {
-            const negociacoes = [];
+      request.addEventListener('success', e => resolve());
+      request.addEventListener('error', e => {
+        console.error(e.target.error);
+        reject('Não foi possível salvar a negociação.');
+      });
+    });
+  }
 
-            const cursor = this._connection
-                .transaction([this._store], 'readonly')
-                .objectStore(this._store)
-                .openCursor();
+  listaTodas() {
+    return new Promise((resolve, reject) => {
+      const negociacoes = [];
 
-            cursor.addEventListener('success', e => {
-                const atual = e.target.result;
+      const cursor = this._connection
+        .transaction([this._store], 'readonly')
+        .objectStore(this._store)
+        .openCursor();
 
-                if (atual) {
-                    negociacoes.push(
-                        new Negociacao(
-                            atual.value._data,
-                            atual.value._quantidade,
-                            atual.value._valor
-                        )
-                    );
+      cursor.addEventListener('success', e => {
+        const atual = e.target.result;
 
-                    atual.continue();
-                } else {
-                    resolve(negociacoes);
-                }
-            });
+        if (atual) {
+          negociacoes.push(
+            new Negociacao(
+              atual.value._data,
+              atual.value._quantidade,
+              atual.value._valor
+            )
+          );
 
-            cursor.addEventListener('error', e => {
-                console.error(e.target.error);
-                reject('Não foi possível listar as negociações.');
-            });
-        });
-    }
+          atual.continue();
+        } else {
+          resolve(negociacoes);
+        }
+      });
 
-    apagaTodas() {
-        return new Promise((resolve, reject) => {
-            const request = this._connection
-                .transaction([this._store], 'readwrite')
-                .objectStore(this._store)
-                .clear();
+      cursor.addEventListener('error', e => {
+        console.error(e.target.error);
+        reject('Não foi possível listar as negociações.');
+      });
+    });
+  }
 
-            request.addEventListener('success', () => resolve());
-            request.addEventListener('error', e => {
-                console.error(e.target.error);
-                reject('Não foi possível apagar as negociações.');
-            });
-        });
-    }
+  apagaTodas() {
+    return new Promise((resolve, reject) => {
+      const request = this._connection
+        .transaction([this._store], 'readwrite')
+        .objectStore(this._store)
+        .clear();
+
+      request.addEventListener('success', () => resolve());
+      request.addEventListener('error', e => {
+        console.error(e.target.error);
+        reject('Não foi possível apagar as negociações.');
+      });
+    });
+  }
 }
