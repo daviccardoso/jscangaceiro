@@ -19,9 +19,37 @@ class NegociacaoDao {
         });
     }
 
-    listaTodos() {
+    listaTodas() {
         return new Promise((resolve, reject) => {
+            const negociacoes = [];
 
+            const cursor = this._connection
+                .transaction([this._store], 'readonly')
+                .objectStore(this._store)
+                .openCursor();
+
+            cursor.addEventListener('success', e => {
+                const atual = e.target.result;
+
+                if (atual) {
+                    negociacoes.push(
+                        new Negociacao(
+                            atual.value._data,
+                            atual.value._quantidade,
+                            atual.value._valor
+                        )
+                    );
+
+                    atual.continue();
+                } else {
+                    resolve(negociacoes);
+                }
+            });
+
+            cursor.addEventListener('error', e => {
+                console.error(e.target.error);
+                reject('Não foi possível listar as negociações.');
+            });
         });
     }
 }
