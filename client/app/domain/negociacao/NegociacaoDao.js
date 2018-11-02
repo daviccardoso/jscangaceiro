@@ -52,4 +52,19 @@ class NegociacaoDao {
             });
         });
     }
+
+    apagaTodas() {
+        return new Promise((resolve, reject) => {
+            const request = this._connection
+                .transaction([this._store], 'readwrite')
+                .objectStore(this._store)
+                .clear();
+
+            request.addEventListener('success', () => resolve());
+            request.addEventListener('error', e => {
+                console.error(e.target.error);
+                reject('Não foi possível apagar as negociações.');
+            });
+        });
+    }
 }
