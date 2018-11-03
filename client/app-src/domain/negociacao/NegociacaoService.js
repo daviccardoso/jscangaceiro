@@ -1,5 +1,5 @@
 import { HttpService } from '../../util/HttpService.js';
-import { Negociacao } from '../negociacao/Negociacao.js';
+import { Negociacao } from './Negociacao.js';
 
 export class NegociacaoService {
   constructor() {

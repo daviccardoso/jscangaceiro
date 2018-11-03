@@ -1,4 +1,4 @@
-import { Negociacoes } from '../domain/Negociacoes.js';
+import { Negociacoes } from '../domain/negociacao/Negociacoes.js';
 import { NegociacoesView } from '../ui/views/NegociacoesView.js';
 import { Mensagem } from '../ui/models/Mensagem.js';
 import { MensagemView } from '../ui/views/MensagemView.js';
