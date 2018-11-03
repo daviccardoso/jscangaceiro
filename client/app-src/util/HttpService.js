@@ -4,7 +4,7 @@ export class HttpService {
       const xhr = new XMLHttpRequest();
 
       xhr.open('GET', url);
-      xhr.addEventListener(() => {
+      xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {
             resolve(JSON.parse(xhr.responseText));
