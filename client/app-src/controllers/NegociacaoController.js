@@ -23,59 +23,59 @@ export class NegociacaoController {
     this._init();
   }
 
-  _init() {
-    getNegociacaoDao()
-      .then(dao => dao.listaTodas())
-      .then(negociacoes =>
-        negociacoes.forEach(negociacao =>
-          this._negociacoes.adiciona(negociacao)))
-      .catch(err => this._mensagem.texto = err);
+  async _init() {
+    try {
+      const dao = await getNegociacaoDao();
+      const negociacoes = await dao.listaTodas();
+
+      negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+    } catch (err) {
+      this._mensagem.texto = err.message;
+    }
   }
 
-  importaNegociacoes() {
-    this._service.obterNegociacoesDoPeriodo()
-      .then(negociacoes => {
-        negociacoes.filter(novaNegociacao =>
-          !this._negociacoes.paraArray().some(negociacaoExistente =>
-            novaNegociacao.equals(negociacaoExistente)
-          )
-        )
-          .forEach(negociacao => this._negociacoes.adiciona(negociacao));
-        this._mensagem.texto = 'Negociações do período importadas com sucesso.';
-      }
-      ).catch(err => this._mensagem.texto = err);
+  async importaNegociacoes() {
+    try {
+      const negociacoes = await this._service.obterNegociacoesDoPeriodo();
+
+      negociacoes
+        .filter(novaNegociacao =>
+          !this._negociacoes
+            .paraArray()
+            .some(negociacaoExistente => novaNegociacao.equals(negociacaoExistente)))
+        .forEach(negociacao => this._negociacoes.adiciona(negociacao));
+      this._mensagem.texto = 'Negociações do período importadas com sucesso.';
+    } catch (err) {
+      this._mensagem.texto = err.message;
+    }
   }
 
-  adiciona(event) {
+  async adiciona(event) {
     try {
       event.preventDefault();
 
       const negociacao = this._criaNegociacao();
+      const dao = await getNegociacaoDao();
 
-      getNegociacaoDao()
-        .then(dao => dao.adiciona(negociacao))
-        .then(() => {
-          this._negociacoes.adiciona(negociacao);
-          this._mensagem.texto = 'Negociação adicionada com sucesso.';
-          this._limpaFormulario();
-        })
-        .catch(err => this._mensagem.texto = err);
+      await dao.adiciona(negociacao);
+      this._negociacoes.adiciona(negociacao);
+      this._mensagem.texto = 'Negociação adicionada com sucesso.';
+      this._limpaFormulario();
     } catch (err) {
-      if (err instanceof DataInvalidaException)
-        this._mensagem.texto = err.message;
-      else
-        this._mensagem.texto = 'Um erro não esperado aconteceu. Entre em contato com o suporte.';
+      this._mensagem.texto = err.message;
     }
   }
 
-  apaga() {
-    getNegociacaoDao()
-      .then(dao => dao.apagaTodas())
-      .then(() => {
-        this._negociacoes.esvazia();
-        this._mensagem.texto = 'Negociações apagadas com sucesso.';
-      })
-      .catch(err => this._mensagem.texto = err);
+  async apaga() {
+    try {
+      const dao = await getNegociacaoDao();
+
+      await dao.apagaTodas();
+      this._negociacoes.esvazia();
+      this._mensagem.texto = 'Negociações apagadas com sucesso.';
+    } catch (err) {
+      err => this._mensagem.texto = err.message;
+    }
   }
 
   _limpaFormulario() {

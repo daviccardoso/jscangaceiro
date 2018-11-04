@@ -6,19 +6,21 @@ export class NegociacaoService {
     this._http = new HttpService();
   }
 
-  obterNegociacoesDoPeriodo() {
-    return Promise.all([
-      this.obterNegociacoesDaSemana(),
-      this.obterNegociacoesDaSemanaAnterior(),
-      this.obterNegociacoesDaSemanaRetrasada()
-    ]).then(periodo =>
-      periodo
+  async obterNegociacoesDoPeriodo() {
+    try {
+      const periodo = await Promise.all([
+        this.obterNegociacoesDaSemana(),
+        this.obterNegociacoesDaSemanaAnterior(),
+        this.obterNegociacoesDaSemanaRetrasada()
+      ]);
+
+      return periodo
         .reduce((novoArray, item) => novoArray.concat(item), [])
-        .sort((a, b) => b.data.getTime() - a.data.getTime())
-    ).catch(err => {
+        .sort((a, b) => b.data.getTime() - a.data.getTime());
+    } catch (err) {
       console.log(err);
       throw new Error('Não foi possível obter as negociações do período.');
-    });
+    }
   }
 
   obterNegociacoesDaSemana() {
