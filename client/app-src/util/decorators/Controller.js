@@ -5,7 +5,7 @@ export function controller(...seletores) {
     const constructorOriginal = constructor;
 
     const constructorNovo = function() {
-      return new constructorNovo(...elements);
+      return new constructorOriginal(...elements);
     }
 
     constructorNovo.prototype = constructorOriginal.prototype;
