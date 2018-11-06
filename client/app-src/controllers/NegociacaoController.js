@@ -4,11 +4,8 @@ import { getNegociacaoDao, Bind, getExceptionMessage, debounce, controller } fro
 
 @controller('#data', '#quantidade', '#valor')
 export class NegociacaoController {
-  constructor(inputData, inputQuantidade, inputValor) {
-    const $ = document.querySelector.bind(document);
-    this._inputData = inputData;
-    this._inputQuantidade = inputQuantidade;
-    this._inputValor = inputValor;
+  constructor(_inputData, _inputQuantidade, _inputValor) {
+    Object.assign(this, { _inputData, _inputQuantidade, _inputValor });
     this._service = new NegociacaoService();
     this._negociacoes = new Bind(
       new Negociacoes(),
