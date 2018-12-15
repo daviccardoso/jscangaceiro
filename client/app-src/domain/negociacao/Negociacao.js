@@ -1,5 +1,10 @@
+import { obrigatorio } from '../../util/obrigatorio.js';
+
 export class Negociacao {
-  constructor(_data, _quantidade, _valor) {
+  constructor(
+    _data = obrigatorio('data'),
+    _quantidade = obrigatorio('quantidade'),
+    _valor = obrigatorio('valor')) {
     Object.assign(this, { _quantidade, _valor });
     this._data = new Date(_data.getTime());
     Object.freeze(this);
