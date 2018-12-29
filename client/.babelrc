@@ -1,0 +1,4 @@
+{
+  "plugins": ["transform-decorators-legacy", "babel-plugin-syntax-dynamic-import"],
+  "presets": ["es2017"]
+}

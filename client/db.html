@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Aprendendo IndexedDB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <script>
+        const openRequest = indexedDB.open('jscangaceiro', 2);
+        let connection = null;
+
+        openRequest.addEventListener('upgradeneeded', e => {
+            console.log('Cria ou altera um banco existente.');
+            connection = e.target.result;
+
+            if (connection.objectStoreNames.contains('negociacoes')) {
+                connection.deleteObjectStore('negociacoes');
+            }
+
+            connection.createObjectStore('negociacoes', { autoIncrement: true });
+        });
+
+        openRequest.addEventListener('success', e => {
+            console.log('Conexão estabelecida com sucesso.');
+            connection = e.target.result;
+        });
+
+        openRequest.addEventListener('error', e =>
+            console.error(e.target.error)
+        );
+
+        function adiciona() {
+            const negociacao = new Negociacao(new Date(), 200, 1);
+            const request = connection
+                .transaction(['negociacoes'], 'readwrite')
+                .objectStore('negociacoes')
+                .add(negociacao);
+
+            request.addEventListener('success', () =>
+                console.log('Negociação salva com sucesso.')
+            );
+
+            request.addEventListener('error', () =>
+                console.log('Não foi possível salvar a negociação.')
+            )
+        }
+
+        function listaTodas() {
+            const negociacoes = [];
+            const cursor = connection
+                .transaction('negociacoes', 'readonly')
+                .objectStore('negociacoes')
+                .openCursor();
+
+            cursor.addEventListener('success', (e) => {
+                const atual = e.target.result;
+
+                if (atual) {
+                    negociacoes.push(
+                        new Negociacao(
+                            atual.value._data,
+                            atual.value._quantidade,
+                            atual.value._valor
+                        )
+                    );
+                    atual.continue();
+                } else {
+                    console.log(negociacoes);
+                }
+            });
+
+            cursor.addEventListener('error', e =>
+                console.error('Error:', e.target.error.name)
+            );
+        }
+    </script>
+    <script src="app/domain/negociacao/Negociacao.js"></script>
+</body>
+
+</html>
