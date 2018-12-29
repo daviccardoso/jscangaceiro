@@ -1,4 +1,4 @@
-import { Negociacoes, NegociacaoService, Negociacao } from '../domain/index.js';
+import { Negociacoes, Negociacao } from '../domain/index.js';
 import { NegociacoesView, MensagemView, Mensagem, DateConverter } from '../ui/index.js';
 import { getNegociacaoDao, Bind, getExceptionMessage, debounce, controller, bindEvent } from '../util/index.js';
 
@@ -6,7 +6,6 @@ import { getNegociacaoDao, Bind, getExceptionMessage, debounce, controller, bind
 export class NegociacaoController {
   constructor(_inputData, _inputQuantidade, _inputValor) {
     Object.assign(this, { _inputData, _inputQuantidade, _inputValor });
-    this._service = new NegociacaoService();
     this._negociacoes = new Bind(
       new Negociacoes(),
       new NegociacoesView('#negociacoes'),
@@ -36,7 +35,9 @@ export class NegociacaoController {
   @debounce()
   async importaNegociacoes() {
     try {
-      const negociacoes = await this._service.obterNegociacoesDoPeriodo();
+      const { NegociacaoService } = await System.import('../domain/negociacao/NegociacaoService');
+      const service = new NegociacaoService();
+      const negociacoes = await service.obterNegociacoesDoPeriodo();
 
       negociacoes
         .filter(novaNegociacao =>
