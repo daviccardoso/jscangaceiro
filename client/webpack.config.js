@@ -6,6 +6,7 @@ const htmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 let plugins = [];
+let SERVICE_URL = JSON.stringify('http://localhost:3000');
 
 plugins.push(new htmlWebpackPlugin({
   hash: true,
@@ -28,6 +29,8 @@ plugins.push(new webpack.optimize.CommonsChunkPlugin({
 plugins.push(new extractTextPlugin("styles.css"));
 
 if (process.env.NODE_ENV === 'production') {
+  SERVICE_URL = JSON.stringify('https://enderecodaapi.com');
+
   plugins.push(new webpack.optimize.ModuleConcatenationPlugin());
   plugins.push(new babiliPlugin());
   plugins.push(new optimizeCSSAssetPlugin({
@@ -40,6 +43,10 @@ if (process.env.NODE_ENV === 'production') {
     canPrint: true
   }));
 }
+
+plugins.push(new webpack.DefinePlugin({
+  SERVICE_URL
+}));
 
 module.exports = {
   entry: {
@@ -84,5 +91,8 @@ module.exports = {
       }
     ]
   },
-  plugins
+  plugins,
+  devServer: {
+    noInfo: true
+  }
 }
